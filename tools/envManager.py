@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv, find_dotenv
-
 class EnvManager:
     def __init__(self):
         self.load_env()
