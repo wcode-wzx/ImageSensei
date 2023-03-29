@@ -1,3 +1,5 @@
+import json
+
 import cv2
 import numpy as np
 import base64
@@ -7,6 +9,9 @@ class ImageProcessor:
         image = cv2.imread('apps/static/sample.png')
         self.original_image = image
         self.processed_image = image
+
+    def overwrite_original_image(self):
+        self.original_image = self.processed_image
 
     def set_processed_image(self):
         image = cv2.imread('apps/static/sample.png')
@@ -88,6 +93,41 @@ class ImageProcessor:
         gray_image = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
         _, self.processed_image = cv2.threshold(gray_image, threshold, 255, cv2.THRESH_BINARY)
 
+    #-------------------图像几何变换------------------------
+    def scale(self, scale_factor):
+        # 缩放图像大小
+        height, width = self.original_image.shape[:2]
+        new_height, new_width = int(height * scale_factor), int(width * scale_factor)
+        resized_image = cv2.resize(self.original_image, (new_width, new_height))
+        self.processed_image = resized_image
+        return resized_image
+
+    def translate(self, x, y):
+        # 平移图像
+        rows, cols = self.original_image.shape[:2]
+        M = np.float32([[1, 0, x], [0, 1, y]])
+        translated_image = cv2.warpAffine(self.original_image, M, (cols, rows))
+        self.processed_image = translated_image
+        return translated_image
+
+    def rotate(self, angle):
+        # 旋转图像
+        rows, cols = self.original_image.shape[:2]
+        M = cv2.getRotationMatrix2D((cols / 2, rows / 2), angle, 1)
+        rotated_image = cv2.warpAffine(self.original_image, M, (cols, rows))
+        self.processed_image = rotated_image
+        return rotated_image
+
+    def affine(self, src_points, dst_points):
+        # 仿射变换
+        rows, cols = self.original_image.shape[:2]
+        src_points = json.loads(src_points)
+        dst_points = json.loads(dst_points)
+        print(src_points, dst_points)
+        M = cv2.getAffineTransform(np.float32(src_points), np.float32(dst_points))
+        transformed_image = cv2.warpAffine(self.original_image, M, (cols, rows))
+        self.processed_image = transformed_image
+        return transformed_image
 
 
 def img_to_base64(img_array):

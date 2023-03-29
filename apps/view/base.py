@@ -11,9 +11,13 @@ def test():
     return render_template("test.html")
 
 @admin_bp.route('/enhance_contrast', methods=['GET','POST'])
-def test1():
+def enhance_contrast():
     return render_template("form/enhance_contrast.html")
 
 @admin_bp.route('/show', methods=['GET','POST'])
 def show():
     return render_template("show.html")
+
+@admin_bp.route('/geometric_transformation', methods=['GET','POST'])
+def geometric_transformation():
+    return render_template("form/geometric_transformation.html")

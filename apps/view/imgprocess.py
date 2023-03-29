@@ -52,6 +52,12 @@ def get_processed_image():
     img_str = cv2.imencode('.jpg', imp.get_processed_image())[1].tostring()
     return img_str, 200, {"Content-Type": "image/jpeg"}
 
+@img_bp.route('/overwrite_original_image', methods=['GET'])
+def overwrite_original_image():
+    imp.overwrite_original_image()
+    return jsonify({'status': 'success'})
+
+
 
 # 对比度增强
 @img_bp.route('/enhance_contrast', methods=['POST'])
@@ -60,6 +66,34 @@ def enhance_contrast():
     beta = float(request.form.get('beta'))
     imp.enhance_contrast(alpha=alpha, beta=beta)
     return jsonify({'status': 'success'})
+
+@img_bp.route('/geometric_transformation', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        operation = request.form.get('operation')
+        if operation == 'scale':
+            scale_factor = float(request.form.get('scale_factor'))
+            # 处理缩放操作
+            imp.scale(scale_factor=scale_factor)
+            # return f"缩放因子：{scale_factor}"
+        elif operation == 'translate':
+            x = float(request.form.get('x'))
+            y = float(request.form.get('y'))
+            # 处理平移操作
+            imp.translate(x=x, y=y)
+            # return f"X：{x}，Y：{y}"
+        elif operation == 'rotate':
+            angle = float(request.form.get('angle'))
+            # 处理旋转操作
+            imp.rotate(angle=angle)
+            # return f"角度：{angle}"
+        elif operation == 'affine':
+            src_points = request.form.get('src_points')
+            dst_points = request.form.get('dst_points')
+            # 处理仿射操作
+            imp.affine(src_points=src_points, dst_points=dst_points)
+            # return f"源点：{src_points}，目标点：{dst_points}"
+        return jsonify({'status': 'success'})
 
 
 # 直方图均衡化

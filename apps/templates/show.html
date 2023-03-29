@@ -28,6 +28,7 @@
             <p style="text-align: center">Processed Image</p>
             <img id="processed_image" src="" alt="Processed Image">
             <button type="button" class="layui-btn" id="download-button">Download Processed</button>
+            <button type="button" class="layui-btn" id="Overwrite-button">Overwrite the original image</button>
         </div>
         <div id="error_modal" style="display: none;">
             <p>Failed to get image.</p>
@@ -119,6 +120,26 @@
                 // 清理链接对象
                 window.URL.revokeObjectURL(url);
             });
+    });
+
+    const overwritebutton = document.getElementById('Overwrite-button');
+    // 添加点击事件处理函数
+    overwritebutton.addEventListener('click', function () {
+        // 发起GET请求
+        $.ajax({
+            url: "/img/overwrite_original_image",
+            type: "GET",
+            data: $(this).serialize(),
+            success: function (response) {
+                // 处理成功响应
+                console.log("success")
+                get_html("/admin/show", id = '#content')
+            },
+            error: function (xhr) {
+                // 处理错误响应
+                console.log("error")
+            }
+        });
     });
 
 </script>
