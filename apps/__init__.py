@@ -17,7 +17,7 @@ def init_view(app):
 
 
 def create_app(config_name=None):
-    app = Flask(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), template_folder="./apps/templates")
+    app = Flask(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), template_folder="./apps/templates", static_folder='./apps/static')
     # Define a flask app
     app.config.update(RESTFUL_JSON=dict(ensure_ascii=False))
 

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Blueprint, render_template
+from flask import Blueprint, render_template
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -9,3 +9,11 @@ def index():
 @admin_bp.route('/test', methods=['GET','POST'])
 def test():
     return render_template("test.html")
+
+@admin_bp.route('/enhance_contrast', methods=['GET','POST'])
+def test1():
+    return render_template("form/enhance_contrast.html")
+
+@admin_bp.route('/show', methods=['GET','POST'])
+def show():
+    return render_template("show.html")
