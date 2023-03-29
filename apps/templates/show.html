@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Display Image</title>
+    <style>
+        #original_image, #processed_image {
+            display: block;
+            float: inside;
+            max-width: 98%;
+            height: auto;
+            margin: 10px;
+        }
+
+        #div_kong {
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-row">
+        <div class="layui-col-md6">
+            <p style="text-align: center">Original Image</p>
+            <img id="original_image" src="" alt="Original Image">
+        </div>
+        <div class="layui-col-md6">
+            <p style="text-align: center">Processed Image</p>
+            <img id="processed_image" src="" alt="Processed Image">
+            <button type="button" class="layui-btn" id="download-button">Download Processed</button>
+        </div>
+        <div id="error_modal" style="display: none;">
+            <p>Failed to get image.</p>
+            <button onclick="retry()">Retry</button>
+        </div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <div>
+                <table id="demo" lay-filter="test"></table>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row" id="div_kong">
+    </div>
+</div>
+<script>
+    function showError() {
+        var modal = document.getElementById('error_modal');
+        modal.style.display = 'block';
+    }
+
+    function retry() {
+        var modal = document.getElementById('error_modal');
+        modal.style.display = 'none';
+        getImage('/img/get_processed_image', 'processed_image');
+    }
+
+    function getImage(url, id) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function (e) {
+            if (this.status == 200) {
+                var blob = new Blob([this.response], {type: 'image/jpeg'});
+                var img = document.getElementById(id);
+                img.src = URL.createObjectURL(blob);
+            } else {
+                showError();
+            }
+        };
+        xhr.onerror = function (e) {
+            showError();
+        };
+        xhr.send();
+    };
+    getImage('/img/get_original_image', 'original_image');
+    getImage('/img/get_processed_image', 'processed_image');
+
+
+    layui.use('table', function () {
+        $.ajax({
+            url: '/img/get_hwc',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                layui.use('table', function () {
+                    var table = layui.table;
+                    table.render({
+                        elem: '#demo',
+                        data: data,
+                        cols: [[
+                            {field: 'type', title: 'type'},
+                            {field: 'height', title: 'height'},
+                            {field: 'width', title: 'width'},
+                            {field: 'channels', title: 'channels'},
+                            {field: 'size', title: 'size'}
+                        ]]
+                    });
+                });
+            }
+        });
+    });
+    // 下载processed_image图片
+    const downloadButton = document.getElementById('download-button');
+    downloadButton.addEventListener('click', () => {
+        // 发送HTTP请求
+        fetch('/img/get_processed_image')
+            .then(response => response.blob())
+            .then(blob => {
+                // 创建下载链接
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'image.jpeg';
+                document.body.appendChild(a);
+                // 模拟点击下载链接
+                a.click();
+                // 清理链接对象
+                window.URL.revokeObjectURL(url);
+            });
+    });
+
+</script>
+</body>
+</html>
