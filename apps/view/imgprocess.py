@@ -1,9 +1,56 @@
 # -*- coding: utf-8 -*-
+import base64
+
 import cv2
 import numpy as np
 from flask import Flask, request, jsonify, Blueprint, render_template
+from apps.utils.ImgProcess import ImageProcessor
 
 img_bp = Blueprint('img', __name__, url_prefix='/img')
+
+imp = ImageProcessor()
+
+
+# 接口：设置输入图像
+@img_bp.route('/set_original_image', methods=['POST'])
+def set_image():
+    if request.method == 'POST':
+        # 从请求中获取图片数据
+        img_data = request.files.get('image').read()
+
+        # 将图片数据转换为OpenCV格式
+        nparr = np.fromstring(img_data, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        imp.set_original_image(img)
+        imp.set_processed_image()
+        return render_template('base.html')
+
+@img_bp.route('/get_hwc', methods=['GET', 'POST'])
+def get_hwc():
+    if request.method == 'GET':
+        res = []
+        # for im in [imp.get_original_image(), imp.get_processed_image()]:
+        for key, im in {"original":imp.get_original_image(), "processed":imp.get_processed_image()}.items():
+            try:
+                height, width, channels = im.shape
+                size = im.size
+                res.append({"type":key, "height": height, "width": width, "channels": channels, "size": size})
+            except:
+                res.append({"type":'...', "height": '...', "width": '...', "channels": '...', "size": '...'})
+        print(res)
+        return res
+
+@img_bp.route('/get_original_image', methods=['GET', 'POST'])
+def get_original_image():
+    img_str = cv2.imencode('.jpg', imp.get_original_image())[1].tostring()
+    return img_str, 200, {"Content-Type": "image/jpeg"}
+
+
+@img_bp.route('/get_processed_image', methods=['GET', 'POST'])
+def get_processed_image():
+    img_str = cv2.imencode('.jpg', imp.get_processed_image())[1].tostring()
+    return img_str, 200, {"Content-Type": "image/jpeg"}
 
 
 # 对比度增强
@@ -11,10 +58,9 @@ img_bp = Blueprint('img', __name__, url_prefix='/img')
 def enhance_contrast():
     alpha = float(request.form.get('alpha'))
     beta = float(request.form.get('beta'))
-    img = cv2.imread('input_image.jpg', cv2.IMREAD_UNCHANGED)
-    enhanced_image = np.clip(alpha * img + beta, 0, 255).astype(np.uint8)
-    cv2.imwrite('processed_image.jpg', enhanced_image)
+    imp.enhance_contrast(alpha=alpha, beta=beta)
     return jsonify({'status': 'success'})
+
 
 # 直方图均衡化
 @img_bp.route('/equalize_histogram', methods=['POST'])
@@ -23,6 +69,7 @@ def equalize_histogram():
     equalized_image = cv2.equalizeHist(img)
     cv2.imwrite('processed_image.jpg', equalized_image)
     return jsonify({'status': 'success'})
+
 
 # 图像滤波
 @img_bp.route('/apply_filter', methods=['POST'])
@@ -41,14 +88,16 @@ def apply_filter():
     cv2.imwrite('processed_image.jpg', filtered_image)
     return jsonify({'status': 'success'})
 
+
 # 图像锐化
 @img_bp.route('/sharpen', methods=['POST'])
 def sharpen():
     img = cv2.imread('input_image.jpg', cv2.IMREAD_UNCHANGED)
-    sharpen_kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+    sharpen_kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
     sharpened_image = cv2.filter2D(img, -1, sharpen_kernel)
     cv2.imwrite('processed_image.jpg', sharpened_image)
     return jsonify({'status': 'success'})
+
 
 # 形态学处理
 @img_bp.route('/morphological_transform', methods=['POST'])
@@ -66,6 +115,7 @@ def morphological_transform():
     cv2.imwrite('processed_image.jpg', transformed_image)
     return jsonify({'status': 'success'})
 
+
 # 边缘检测
 @img_bp.route('/detect_edges', methods=['POST'])
 def detect_edges():
@@ -75,6 +125,7 @@ def detect_edges():
     edges_image = cv2.Canny(img, threshold1, threshold2)
     cv2.imwrite('processed_image.jpg', edges_image)
     return jsonify({'status': 'success'})
+
 
 # 二值化
 @img_bp.route('/threshold', methods=['POST'])
