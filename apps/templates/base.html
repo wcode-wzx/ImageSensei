@@ -7,6 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!-- 引入layui.css -->
     <link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
+    <!-- 引入jquery -->
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
     <title>Document</title>
 </head>
 <body>
@@ -64,7 +66,7 @@
                     <a class="" href="javascript:;">menu group 1<i
                             class="layui-icon layui-icon-down layui-nav-more"></i></a>
                     <dl class="layui-nav-child">
-                        <dd><a href="javascript:;">menu 1</a></dd>
+                        <dd><a onclick="chages('/admin/show', '/admin/1')" href="javascript:;">test</a></dd>
                         <dd><a href="javascript:;">menu 2</a></dd>
                         <dd><a href="javascript:;">menu 3</a></dd>
                         <dd><a href="">the links</a></dd>
@@ -87,45 +89,20 @@
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
+            <form action="/img/set_original_image" enctype="multipart/form-data" method="post">
+                <label for="image">Select image to upload:</label>
+                <input type="file" name="image" id="image"><br><br>
+                <input type="submit" value="Upload" class="layui-btn">
+            </form>
             内容主体区域
-
-            <br><br>
-
-            <blockquote class="layui-elem-quote layui-text">
-                <ul>
-
-
-                    <!--<li>
-                      该页面只是简单的管理系统的界面基础布局示例，并不是一整套界面布局方案，您可以关注基于 layui 的通用型管理系统界面模板解决方案：
-                      <a href="/layuiadmin/" target="_blank" class="layui-btn">layuiAdmin</a>
-                    </li>-->
-                    <li>
-                        layui 之所以赢得如此多人的青睐，更多是在于它“前后界面兼备”的能力。既可编织出绚丽的前台页面，又可满足繁杂的管理系统的界面需求。
-                        <br>layui 管理基本布局， 致力于让每一位开发者都能轻松搭建自己的管理系统模板。
-                    </li>
-                </ul>
-            </blockquote>
-
-            <a href="../doc/element/layout.html#admin" target="_blank" class="layui-btn">查看该布局代码</a>
-            <br><br><br>
-
-            <div class="layui-card layui-panel">
-                <div class="layui-card-header">
-                    下面是充数内容，为的是出现滚动条
-                </div>
-                <div class="layui-card-body">
-                    充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>充数内容<br>你还真滑到了底部呀
-                </div>
-            </div>
-            <br><br>
-
-
+            <div id="content"></div>
         </div>
     </div>
 
-    <div class="layui-footer", style="height: 200px">
-        <!-- 底部固定区域 -->
-        控制菜单
+    <div class="layui-footer" style="height: 200px;line-height: 20px">
+        <!-- 控制菜单区域 -->
+        控制台
+        <div id="footer" class="layui-body"></div>
     </div>
 </div>
 <!-- 引入layui.js -->
@@ -133,10 +110,10 @@
 <script>
     //JS
     layui.use(['element', 'layer', 'util'], function () {
-        var element = layui.element
-            , layer = layui.layer
-            , util = layui.util
-            , $ = layui.$;
+        var element = layui.element,
+            layer = layui.layer,
+            util = layui.util,
+            $ = layui.$;
 
         //头部事件
         util.event('lay-header-event', {
@@ -159,6 +136,22 @@
         });
 
     });
+
+    function chages(url_b_srt, url_c_srt) {
+        get_html(url_b_srt, id = '#content')
+        get_html(url_c_srt, id = '#footer')
+    };
+
+    function get_html(url_srt, id) {
+        $.ajax({
+            url: url_srt,
+            type: 'GET',
+            dataType: 'html',
+            success: function (data) {
+                $(id).html(data);
+            }
+        })
+    };
 </script>
 </body>
 </html>
