@@ -14,4 +14,8 @@ conda activate opencv
 # pip 安装
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
 
+# 启动
+python app.py
 
+# 访问主页
+http://127.0.0.1:5001/admin/index

@@ -9,6 +9,18 @@
     <link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css">
     <!-- 引入jquery -->
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <style>
+        #set_original_image label,
+        #set_original_image input[type="file"],
+        #set_original_image input[type="submit"] {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        #set_original_image label {
+            margin-right: 10px;
+        }
+    </style>
+
     <title>Document</title>
 </head>
 <body>
@@ -59,23 +71,28 @@
                     <dl class="layui-nav-child">
                         <dd><a onclick="chages('/admin/show', '/admin/geometric_transformation')">图像几何变换</a></dd>
                         <dd><a onclick="chages('/admin/show', '/admin/image_threshold')">图像阈值</a></dd>
-                        <dd><a onclick="chages('/admin/show', '/admin/enhance_contrast')"
-                               href="javascript:;">图像对比度增强</a></dd>
-                        <dd><a href="javascript:;">menu 2</a></dd>
-                        <dd><a href="javascript:;">menu 3</a></dd>
-                        <dd><a href="">the links</a></dd>
+                        <dd><a onclick="chages('/admin/show', '/admin/enhance_contrast')">图像对比度增强</a></dd>
+                        <dd><a href="javascript:;">平滑图像</a></dd>
+                        <dd><a href="javascript:;">形态转换</a></dd>
+                        <dd><a href="javascript:;">边缘检测</a></dd>
+                        <dd><a href="javascript:;">...</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
-                    <a href="javascript:;">menu group 2<i class="layui-icon layui-icon-down layui-nav-more"></i></a>
+                    <a href="javascript:;">特征检测<i class="layui-icon layui-icon-down layui-nav-more"></i></a>
                     <dl class="layui-nav-child">
-                        <dd><a href="javascript:;">list 1</a></dd>
-                        <dd><a href="javascript:;">list 2</a></dd>
-                        <dd><a href="">超链接</a></dd>
+                        <dd><a href="javascript:;">角点检测</a></dd>
+                        <dd><a href="javascript:;">特征匹配</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item"><a href="javascript:;">click menu item</a></li>
-                <li class="layui-nav-item"><a href="">the links</a></li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">计算摄影<i class="layui-icon layui-icon-down layui-nav-more"></i></a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">图像去噪</a></dd>
+                        <dd><a href="javascript:;">图像修复</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href="">目标检测</a></li>
                 <span class="layui-nav-bar" style="top: 55px; height: 0px; opacity: 0;"></span></ul>
         </div>
     </div>
@@ -85,7 +102,7 @@
         <div style="padding: 15px;">
             <form id="set_original_image" enctype="multipart/form-data">
                 <label for="image">Select image to upload:</label>
-                <input type="file" name="image" id="image"><br><br>
+                <input type="file" name="image" id="image">
                 <input type="submit" value="Upload" class="layui-btn">
             </form>
             内容主体区域
@@ -125,7 +142,7 @@
                     , anim: 5
                     , shadeClose: true
                     , scrollbar: false
-                });
+                })
             }
         });
 
@@ -147,7 +164,7 @@
         })
     };
 
-    // 发起GET请求
+    // set_original_image
     $("#set_original_image").submit(function (event) {
         event.preventDefault();  // 阻止表单的默认提交行为
         var form_data = new FormData();
@@ -177,8 +194,6 @@
             }
         });
     });
-
-
 </script>
 </body>
 </html>
