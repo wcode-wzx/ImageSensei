@@ -59,7 +59,8 @@
                     <dl class="layui-nav-child">
                         <dd><a onclick="chages('/admin/show', '/admin/geometric_transformation')">图像几何变换</a></dd>
                         <dd><a onclick="chages('/admin/show', '/admin/image_threshold')">图像阈值</a></dd>
-                        <dd><a onclick="chages('/admin/show', '/admin/enhance_contrast')" href="javascript:;">图像对比度增强</a></dd>
+                        <dd><a onclick="chages('/admin/show', '/admin/enhance_contrast')"
+                               href="javascript:;">图像对比度增强</a></dd>
                         <dd><a href="javascript:;">menu 2</a></dd>
                         <dd><a href="javascript:;">menu 3</a></dd>
                         <dd><a href="">the links</a></dd>
@@ -82,7 +83,7 @@
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
-            <form action="/img/set_original_image" enctype="multipart/form-data" method="post">
+            <form id="set_original_image" enctype="multipart/form-data">
                 <label for="image">Select image to upload:</label>
                 <input type="file" name="image" id="image"><br><br>
                 <input type="submit" value="Upload" class="layui-btn">
@@ -145,6 +146,39 @@
             }
         })
     };
+
+    // 发起GET请求
+    $("#set_original_image").submit(function (event) {
+        event.preventDefault();  // 阻止表单的默认提交行为
+        var form_data = new FormData();
+        var file_input = document.getElementById('image');
+        form_data.append('image', file_input.files[0]);
+        $.ajax({
+            url: "/img/set_original_image",
+            type: "POST",
+            data: form_data,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                // 处理成功响应
+                get_html("/admin/show", id = '#content')
+                layer.msg('图片上传成功', {
+                    icon: 1,
+                    time: 1000
+                })//1秒关闭（如果不配置，默认是3秒）
+            },
+            error: function (xhr) {
+                // 处理错误响应
+                console.log("error")
+                layer.msg('请先选择图片', {
+                    icon: 2,
+                    time: 2000
+                })//2秒关闭（如果不配置，默认是3秒）
+            }
+        });
+    });
+
+
 </script>
 </body>
 </html>

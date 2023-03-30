@@ -33,8 +33,13 @@ def get_hwc():
         res = []
         for key, im in {"original": imp.get_original_image(), "processed": imp.get_processed_image()}.items():
             try:
-                height, width, channels = im.shape
-                size = im.size
+                if len(im.shape) == 3:
+                    height, width, channels = im.shape
+                    size = im.size
+                else:
+                    height, width = im.shape
+                    channels = 1
+                    size = im.size
                 res.append({"type": key, "height": height, "width": width, "channels": channels, "size": size})
             except:
                 res.append({"type": '...', "height": '...', "width": '...', "channels": '...', "size": '...'})
