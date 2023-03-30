@@ -21,3 +21,7 @@ def show():
 @admin_bp.route('/geometric_transformation', methods=['GET','POST'])
 def geometric_transformation():
     return render_template("form/geometric_transformation.html")
+
+@admin_bp.route('/image_threshold', methods=['GET','POST'])
+def image_threshold():
+    return render_template("form/image_threshold.html")

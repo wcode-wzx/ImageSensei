@@ -26,20 +26,20 @@ def set_image():
         imp.set_processed_image()
         return render_template('base.html')
 
+
 @img_bp.route('/get_hwc', methods=['GET', 'POST'])
 def get_hwc():
     if request.method == 'GET':
         res = []
-        # for im in [imp.get_original_image(), imp.get_processed_image()]:
-        for key, im in {"original":imp.get_original_image(), "processed":imp.get_processed_image()}.items():
+        for key, im in {"original": imp.get_original_image(), "processed": imp.get_processed_image()}.items():
             try:
                 height, width, channels = im.shape
                 size = im.size
-                res.append({"type":key, "height": height, "width": width, "channels": channels, "size": size})
+                res.append({"type": key, "height": height, "width": width, "channels": channels, "size": size})
             except:
-                res.append({"type":'...', "height": '...', "width": '...', "channels": '...', "size": '...'})
-        print(res)
+                res.append({"type": '...', "height": '...', "width": '...', "channels": '...', "size": '...'})
         return res
+
 
 @img_bp.route('/get_original_image', methods=['GET', 'POST'])
 def get_original_image():
@@ -52,11 +52,11 @@ def get_processed_image():
     img_str = cv2.imencode('.jpg', imp.get_processed_image())[1].tostring()
     return img_str, 200, {"Content-Type": "image/jpeg"}
 
+
 @img_bp.route('/overwrite_original_image', methods=['GET'])
 def overwrite_original_image():
     imp.overwrite_original_image()
     return jsonify({'status': 'success'})
-
 
 
 # 对比度增强
@@ -66,6 +66,7 @@ def enhance_contrast():
     beta = float(request.form.get('beta'))
     imp.enhance_contrast(alpha=alpha, beta=beta)
     return jsonify({'status': 'success'})
+
 
 @img_bp.route('/geometric_transformation', methods=['GET', 'POST'])
 def index():
@@ -94,6 +95,37 @@ def index():
             imp.affine(src_points=src_points, dst_points=dst_points)
             # return f"源点：{src_points}，目标点：{dst_points}"
         return jsonify({'status': 'success'})
+
+
+@img_bp.route('/image_threshold', methods=['GET', 'POST'])
+def image_threshold():
+    if request.method == 'POST':
+        function_name = request.form['select']
+        if function_name == 'threshold':
+            threshold_value = request.form['threshold-value']
+            max_value = request.form['max-value']
+            threshold_type = request.form['threshold-type']
+            imp.threshold(threshold_value=threshold_value, max_value=max_value, threshold_type=threshold_type)
+            print('Threshold Function: threshold_value={}, max_value={}, threshold_type={}'.format(threshold_value,
+                                                                                                   max_value,
+                                                                                                   threshold_type))
+        elif function_name == 'adaptive_threshold':
+            block_size = request.form['block-size']
+            c = request.form['c']
+            threshold_type = request.form['threshold-type']
+            imp.adaptive_threshold(block_size=block_size, c=c, threshold_type=threshold_type)
+            print('Adaptive Threshold Function: block_size={}, c={}, threshold_type={}'.format(block_size, c,
+                                                                                               threshold_type))
+        elif function_name == 'binary':
+            print('Binary Function')
+            imp.binary()
+        elif function_name == 'grayscale':
+            imp.grayscale()
+            print('Grayscale Function')
+        else:
+            print('Invalid Function')
+
+        return jsonify({'status': 'success Form Processed Successfully'})
 
 
 # 直方图均衡化

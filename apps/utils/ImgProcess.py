@@ -95,7 +95,11 @@ class ImageProcessor:
 
     #-------------------图像几何变换------------------------
     def scale(self, scale_factor):
-        # 缩放图像大小
+        """
+        缩放图像大小
+        :param scale_factor:
+        :return:
+        """
         height, width = self.original_image.shape[:2]
         new_height, new_width = int(height * scale_factor), int(width * scale_factor)
         resized_image = cv2.resize(self.original_image, (new_width, new_height))
@@ -103,7 +107,12 @@ class ImageProcessor:
         return resized_image
 
     def translate(self, x, y):
-        # 平移图像
+        """
+        平移图像
+        :param x:
+        :param y:
+        :return:
+        """
         rows, cols = self.original_image.shape[:2]
         M = np.float32([[1, 0, x], [0, 1, y]])
         translated_image = cv2.warpAffine(self.original_image, M, (cols, rows))
@@ -111,7 +120,11 @@ class ImageProcessor:
         return translated_image
 
     def rotate(self, angle):
-        # 旋转图像
+        """
+        旋转图像
+        :param angle:
+        :return:
+        """
         rows, cols = self.original_image.shape[:2]
         M = cv2.getRotationMatrix2D((cols / 2, rows / 2), angle, 1)
         rotated_image = cv2.warpAffine(self.original_image, M, (cols, rows))
@@ -119,15 +132,65 @@ class ImageProcessor:
         return rotated_image
 
     def affine(self, src_points, dst_points):
-        # 仿射变换
+        """
+        仿射变换
+        :param src_points:
+        :param dst_points:
+        :return:
+        """
         rows, cols = self.original_image.shape[:2]
         src_points = json.loads(src_points)
         dst_points = json.loads(dst_points)
-        print(src_points, dst_points)
         M = cv2.getAffineTransform(np.float32(src_points), np.float32(dst_points))
         transformed_image = cv2.warpAffine(self.original_image, M, (cols, rows))
         self.processed_image = transformed_image
         return transformed_image
+
+    # -------------------图像阈值------------------------
+    def threshold(self, threshold_value, max_value, threshold_type):
+        """
+
+        :param threshold_value:
+        :param max_value:
+        :param threshold_type:
+        :return:
+        """
+        gray_img = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)  # 将图像转换为灰度
+        _, thresh_img = cv2.threshold(gray_img, int(threshold_value), int(max_value), eval(threshold_type))  # 应用全局阈值
+        self.processed_image = thresh_img
+        return thresh_img
+
+    def adaptive_threshold(self, block_size, c, threshold_type):
+        """
+
+        :param block_size:
+        :param c:
+        :param threshold_type:
+        :return:
+        """
+        gray_img = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)  # 将图像转换为灰度
+        thresh_img = cv2.adaptiveThreshold(gray_img, 255, threshold_type, cv2.THRESH_BINARY, block_size, c)  # 应用自适应阈值
+        self.processed_image = thresh_img
+        return thresh_img
+
+    def binary(self):
+        """
+        二值化
+        :return:
+        """
+        gray_img = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)  # 将图像转换为灰度
+        _, thresh_img = cv2.threshold(gray_img, 127, 255, cv2.THRESH_BINARY)  # 应用全局阈值
+        self.processed_image = thresh_img
+        return thresh_img
+
+    def grayscale(self):
+        """
+        灰度化
+        :return:
+        """
+        gray_img = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)  # 将图像转换为灰度
+        self.processed_image = gray_img
+        return gray_img
 
 
 def img_to_base64(img_array):
