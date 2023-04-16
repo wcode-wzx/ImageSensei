@@ -270,6 +270,23 @@ class ImageProcessor:
         """
         self.processed_image = cv2.morphologyEx(self.original_image, cv2.MORPH_BLACKHAT, self.kernel)
 
+    # -------------------边缘检测------------------------
+    def edge_detection(self, minVal, maxVal):
+        """
+        边缘检测函数
+
+        :param image: 输入图像
+        :return: 边缘检测后的图像
+        """
+        # 将图像转换为灰度图像
+        gray = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
+
+        # 使用高斯滤波平滑图像
+        blurred = cv2.GaussianBlur(gray, (3, 3), 0)
+
+        # 使用 Canny 算法进行边缘检测
+        self.processed_image = cv2.Canny(blurred, minVal, maxVal)
+
 
 
 def img_to_base64(img_array):

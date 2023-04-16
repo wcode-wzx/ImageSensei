@@ -33,3 +33,7 @@ def smooth_image():
 @admin_bp.route('/morphological_transformation', methods=['GET','POST'])
 def morphological_transformation():
     return render_template("form/morphological_transformation.html")
+
+@admin_bp.route('/edge_detection', methods=['GET','POST'])
+def edge_detection():
+    return render_template("form/edge_detection.html")

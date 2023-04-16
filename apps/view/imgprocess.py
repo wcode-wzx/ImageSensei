@@ -188,7 +188,14 @@ def morphological_transformation():
             return jsonify({'status': 'success Form Processed Successfully'})
         else:
             return jsonify({'error': 'Invalid filter type'})    
-
+        
+# 边缘检测
+@img_bp.route('/edge_detection', methods=['POST'])
+def edge_detection():
+    minVal = int(request.form.get('minVal'))
+    maxVal = int(request.form.get('maxVal'))
+    imp.edge_detection(minVal=minVal, maxVal=maxVal)
+    return jsonify({'status': 'edge_detection success'})
 
 
 # 直方图均衡化
@@ -245,15 +252,7 @@ def morphological_transform():
     return jsonify({'status': 'success'})
 
 
-# 边缘检测
-@img_bp.route('/detect_edges', methods=['POST'])
-def detect_edges():
-    threshold1 = int(request.form.get('threshold1'))
-    threshold2 = int(request.form.get('threshold2'))
-    img = cv2.imread('input_image.jpg', cv2.IMREAD_GRAYSCALE)
-    edges_image = cv2.Canny(img, threshold1, threshold2)
-    cv2.imwrite('processed_image.jpg', edges_image)
-    return jsonify({'status': 'success'})
+
 
 
 # 二值化

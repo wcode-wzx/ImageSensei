@@ -1,0 +1,30 @@
+{#边缘检测#}
+{#图像对比度增强#}
+<body>
+<form id="edge_detection">
+    <label for="minVal">minVal:</label>
+    <input type="number" id="minVal" name="minVal" value="50" step="1"><br><br>
+    <label for="maxVal">maxVal:</label>
+    <input type="number" id="maxVal" name="maxVal" value="150" step="1"><br><br>
+    <input type="submit" value="提交">
+</form>
+<script>
+    $("#edge_detection").submit(function (event) {
+        event.preventDefault();  // 阻止表单的默认提交行为
+        $.ajax({
+            url: "/img/edge_detection",
+            type: "POST",
+            data: $(this).serialize(),
+            success: function (response) {
+                // 处理成功响应
+                console.log("success")
+                get_html("/admin/show", id = '#content')
+            },
+            error: function (xhr) {
+                // 处理错误响应
+                console.log("error")
+            }
+        });
+    });
+</script>
+</body>
