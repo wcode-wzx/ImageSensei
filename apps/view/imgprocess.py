@@ -101,7 +101,7 @@ def index():
             # return f"源点：{src_points}，目标点：{dst_points}"
         return jsonify({'status': 'success'})
 
-
+# 图像阈值
 @img_bp.route('/image_threshold', methods=['GET', 'POST'])
 def image_threshold():
     if request.method == 'POST':
@@ -131,6 +131,30 @@ def image_threshold():
             print('Invalid Function')
 
         return jsonify({'status': 'success Form Processed Successfully'})
+    
+# 平滑图像
+@img_bp.route('/smooth_image', methods=['GET', 'POST'])
+def smooth_image():
+    if request.method == 'POST':
+        # 获取请求中的滤波器类型和核大小
+        filter_type = request.form['filter_type']
+        kernel_size = int(request.form['kernel_size'])
+        imp.set_kernel_size(kernel_size=kernel_size)
+
+        if filter_type == 'mean':
+            imp.mean_blur()
+            return jsonify({'status': 'success Form Processed Successfully'})
+        elif filter_type == 'gaussian':
+            imp.gaussian_blur()
+            return jsonify({'status': 'success Form Processed Successfully'})
+        elif filter_type == 'median':
+            imp.median_blur()
+            return jsonify({'status': 'success Form Processed Successfully'})
+        elif filter_type == 'bilateral':
+            imp.bilateral_filter()
+            return jsonify({'status': 'success Form Processed Successfully'})
+        else:
+            return jsonify({'error': 'Invalid filter type'})
 
 
 # 直方图均衡化

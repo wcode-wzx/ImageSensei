@@ -10,13 +10,13 @@ def index():
 def test():
     return render_template("test.html")
 
-@admin_bp.route('/enhance_contrast', methods=['GET','POST'])
-def enhance_contrast():
-    return render_template("form/enhance_contrast.html")
-
 @admin_bp.route('/show', methods=['GET','POST'])
 def show():
     return render_template("show.html")
+
+@admin_bp.route('/enhance_contrast', methods=['GET','POST'])
+def enhance_contrast():
+    return render_template("form/enhance_contrast.html")
 
 @admin_bp.route('/geometric_transformation', methods=['GET','POST'])
 def geometric_transformation():
@@ -25,3 +25,7 @@ def geometric_transformation():
 @admin_bp.route('/image_threshold', methods=['GET','POST'])
 def image_threshold():
     return render_template("form/image_threshold.html")
+
+@admin_bp.route('/smooth_image', methods=['GET','POST'])
+def smooth_image():
+    return render_template("form/smooth_image.html")

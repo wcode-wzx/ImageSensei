@@ -191,6 +191,27 @@ class ImageProcessor:
         gray_img = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)  # 将图像转换为灰度
         self.processed_image = gray_img
         return gray_img
+    
+    # -------------------平滑图像------------------------
+    def set_kernel_size(self, kernel_size):
+        self.kernel_size = kernel_size
+
+    def mean_blur(self):
+        # 均值模糊
+        self.processed_image = cv2.blur(self.original_image, (self.kernel_size, self.kernel_size))
+
+    def gaussian_blur(self):
+        # 高斯模糊
+        self.processed_image = cv2.GaussianBlur(self.original_image, (self.kernel_size, self.kernel_size), 0)
+
+    def median_blur(self):
+        # 中值滤波
+        self.processed_image = cv2.medianBlur(self.original_image, self.kernel_size)
+
+    def bilateral_filter(self):
+        # 双边滤波
+        self.processed_image = cv2.bilateralFilter(self.original_image, self.kernel_size, 75, 75)
+
 
 
 def img_to_base64(img_array):
