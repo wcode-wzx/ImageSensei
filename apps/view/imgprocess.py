@@ -156,6 +156,40 @@ def smooth_image():
         else:
             return jsonify({'error': 'Invalid filter type'})
 
+# 形态转换
+@img_bp.route('/morphological_transformation', methods=['GET', 'POST'])
+def morphological_transformation():
+    if request.method == 'POST':
+        # 获取请求中的滤波器类型和核大小
+        filter_type = request.form['filter_type']
+        kernel_size = int(request.form['kernel_size'])
+        imp.set_kernel(kernel_size=kernel_size)
+
+        if filter_type == 'erode':
+            imp.erode()
+            return jsonify({'status': 'success Form Processed Successfully'})
+        elif filter_type == 'dilate':
+            imp.dilate()
+            return jsonify({'status': 'success Form Processed Successfully'})
+        elif filter_type == 'opening':
+            imp.opening()
+            return jsonify({'status': 'success Form Processed Successfully'})
+        elif filter_type == 'closing':
+            imp.closing()
+            return jsonify({'status': 'success Form Processed Successfully'})
+        elif filter_type == 'gradient':
+            imp.gradient()
+            return jsonify({'status': 'success Form Processed Successfully'})
+        elif filter_type == 'tophat':
+            imp.tophat()
+            return jsonify({'status': 'success Form Processed Successfully'})
+        elif filter_type == 'blackhat':
+            imp.blackhat()
+            return jsonify({'status': 'success Form Processed Successfully'})
+        else:
+            return jsonify({'error': 'Invalid filter type'})    
+
+
 
 # 直方图均衡化
 @img_bp.route('/equalize_histogram', methods=['POST'])

@@ -29,3 +29,7 @@ def image_threshold():
 @admin_bp.route('/smooth_image', methods=['GET','POST'])
 def smooth_image():
     return render_template("form/smooth_image.html")
+
+@admin_bp.route('/morphological_transformation', methods=['GET','POST'])
+def morphological_transformation():
+    return render_template("form/morphological_transformation.html")

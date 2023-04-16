@@ -194,23 +194,81 @@ class ImageProcessor:
     
     # -------------------平滑图像------------------------
     def set_kernel_size(self, kernel_size):
+        """设置kernel_size
+
+        Args:
+            kernel_size (int): kernel_size大小
+        """
         self.kernel_size = kernel_size
 
     def mean_blur(self):
-        # 均值模糊
+        """均值模糊"""
         self.processed_image = cv2.blur(self.original_image, (self.kernel_size, self.kernel_size))
 
     def gaussian_blur(self):
-        # 高斯模糊
+        """高斯模糊"""
         self.processed_image = cv2.GaussianBlur(self.original_image, (self.kernel_size, self.kernel_size), 0)
 
     def median_blur(self):
-        # 中值滤波
+        """中值滤波"""
         self.processed_image = cv2.medianBlur(self.original_image, self.kernel_size)
 
     def bilateral_filter(self):
-        # 双边滤波
+        """双边滤波"""
         self.processed_image = cv2.bilateralFilter(self.original_image, self.kernel_size, 75, 75)
+
+
+    # -------------------形态转换------------------------
+    def set_kernel(self, kernel_size: int):
+        """
+        构造函数
+
+        :param kernel_size: 核大小
+        """
+        self.kernel_size = kernel_size
+        self.kernel = np.ones((kernel_size, kernel_size), np.uint8)
+
+    def erode(self):
+        """
+        腐蚀操作
+        """
+        self.processed_image = cv2.erode(self.original_image, self.kernel, iterations=1)
+
+    def dilate(self):
+        """
+        膨胀操作
+        """
+        self.processed_image = cv2.dilate(self.original_image, self.kernel, iterations=1)
+
+    def opening(self):
+        """
+        开运算操作
+        """
+        self.processed_image = cv2.morphologyEx(self.original_image, cv2.MORPH_OPEN, self.kernel)
+
+    def closing(self):
+        """
+        闭运算操作
+        """
+        self.processed_image = cv2.morphologyEx(self.original_image, cv2.MORPH_CLOSE, self.kernel)
+
+    def gradient(self):
+        """
+        形态梯度操作
+        """
+        self.processed_image = cv2.morphologyEx(self.original_image, cv2.MORPH_GRADIENT, self.kernel)
+
+    def tophat(self):
+        """
+        顶帽操作
+        """
+        self.processed_image = cv2.morphologyEx(self.original_image, cv2.MORPH_TOPHAT, self.kernel)
+
+    def blackhat(self):
+        """
+        黑帽操作
+        """
+        self.processed_image = cv2.morphologyEx(self.original_image, cv2.MORPH_BLACKHAT, self.kernel)
 
 
 
