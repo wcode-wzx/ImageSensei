@@ -1,0 +1,41 @@
+{#模板匹配#}
+<form id="template_matching" enctype="multipart/form-data">
+    <label for="image">模板图像:</label>
+    <input type="file" name="image" id="image"><br><br>
+    <label for="method">选择method</label><br>
+    <select id="method" name="method">
+        <option value="cv2.TM_CCOEFF">cv2.TM_CCOEFF</option>
+        <option value="cv2.TM_CCOEFF_NORMED">cv2.TM_CCOEFF_NORMED</option>
+        <option value="cv2.TM_CCORR">cv2.TM_CCORR</option>
+        <option value="cv2.TM_CCORR_NORMED">cv2.TM_CCORR_NORMED</option>
+        <option value="cv2.TM_SQDIFF">cv2.TM_SQDIFF</option>
+        <option value="cv2.TM_SQDIFF_NORMED">cv2.TM_SQDIFF_NORMED</option>
+    </select><br>
+    <input type="submit" value="Submit">
+</form>
+<script>
+    $(document).ready(function() {
+        $('#template_matching').submit(function(event) {
+            event.preventDefault();
+            var formData = new FormData($(this)[0]);
+            $.ajax({
+                url: '/img/template_matching',
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                // 处理成功响应
+                console.log("success")
+                get_html("/admin/show", id = '#content')
+                },
+                error: function (xhr) {
+                    // 处理错误响应
+                    console.log("error")
+                }
+            });
+        });
+    });
+</script>

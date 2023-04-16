@@ -286,6 +286,40 @@ class ImageProcessor:
 
         # 使用 Canny 算法进行边缘检测
         self.processed_image = cv2.Canny(blurred, minVal, maxVal)
+    
+    # -------------------模板匹配------------------------
+    def template_matching(self, template: np.ndarray, method: str) -> np.ndarray:
+        """
+        使用模板匹配在图像中查找模板，并返回带有所有匹配位置框的图像。
+
+        Args:
+            img: 待搜索的图像，应该是一个灰度图像。
+            template: 要搜索的模板，应该是一个灰度图像。
+
+        Returns:
+            带有所有匹配位置框的图像。
+        """
+        original_image = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
+        template_image = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+        
+        # 获取模板的宽度和高度
+        w, h = template_image.shape[::-1]
+        print(w,h)
+
+        # 使用模板匹配算法在图像中搜索模板
+        res = cv2.matchTemplate(original_image, template_image, eval(method))
+
+        # 找到所有匹配位置
+        loc = np.where(res >= 0.8)
+
+        # 在原始图像上绘制所有匹配位置框
+        temp = self.original_image.copy()
+        for pt in zip(*loc[::-1]):
+            cv2.rectangle(temp, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 1)
+
+        # 返回带有所有匹配位置框的图像
+        self.processed_image = temp
+        return self.processed_image
 
 
 

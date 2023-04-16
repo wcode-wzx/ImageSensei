@@ -37,3 +37,11 @@ def morphological_transformation():
 @admin_bp.route('/edge_detection', methods=['GET','POST'])
 def edge_detection():
     return render_template("form/edge_detection.html")
+
+@admin_bp.route('/template_matching', methods=['GET','POST'])
+def template_matching():
+    return render_template("form/template_matching.html")
+
+@admin_bp.route('/hough_transform', methods=['GET','POST'])
+def hough_transform():
+    return render_template("form/hough_transform.html")

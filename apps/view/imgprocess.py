@@ -192,10 +192,25 @@ def morphological_transformation():
 # 边缘检测
 @img_bp.route('/edge_detection', methods=['POST'])
 def edge_detection():
-    minVal = int(request.form.get('minVal'))
-    maxVal = int(request.form.get('maxVal'))
-    imp.edge_detection(minVal=minVal, maxVal=maxVal)
-    return jsonify({'status': 'edge_detection success'})
+    if request.method == 'POST':
+        minVal = int(request.form.get('minVal'))
+        maxVal = int(request.form.get('maxVal'))
+        imp.edge_detection(minVal=minVal, maxVal=maxVal)
+        return jsonify({'status': 'edge_detection success'})
+
+# 模板匹配
+@img_bp.route('/template_matching', methods=['POST'])
+def template_matching():
+    if request.method == 'POST':
+        template_data = request.files.get('image').read()
+        method = request.form['method']
+
+        # 将图片数据转换为OpenCV格式
+        nparr = np.fromstring(template_data, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        imp.template_matching(img, method)
+        return jsonify({'status': 'template_matching success'})
 
 
 # 直方图均衡化
@@ -252,14 +267,3 @@ def morphological_transform():
     return jsonify({'status': 'success'})
 
 
-
-
-
-# 二值化
-@img_bp.route('/threshold', methods=['POST'])
-def threshold():
-    threshold_value = int(request.form.get('threshold_value'))
-    img = cv2.imread('input_image.jpg', cv2.IMREAD_GRAYSCALE)
-    _, thresholded_image = cv2.threshold(img, threshold_value, 255, cv2.THRESH_BINARY)
-    cv2.imwrite('processed_image.jpg', thresholded_image)
-    return jsonify({'status': 'success'})
