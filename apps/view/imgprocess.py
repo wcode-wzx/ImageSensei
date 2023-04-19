@@ -233,10 +233,12 @@ def hough_transform():
             param2 = request.form.get('param2')
             minRadius = request.form.get('minRadius')
             maxRadius = request.form.get('maxRadius')
-            imp.detect_circles(param1=float(param1), param2=float(param2), minRadius=int(minRadius), maxRadius=int(maxRadius))
+            imp.detect_circles(param1=float(param1), param2=float(param2), minRadius=int(minRadius),
+                               maxRadius=int(maxRadius))
         else:
             pass
         return jsonify({'status': 'template_matching success'})
+
 
 # 人脸识别
 @img_bp.route('/face_recognition', methods=['POST'])
@@ -249,9 +251,35 @@ def face_recognition():
         else:
             return jsonify({'code': 0})
 
+
 # answer_sheet_identification 答题卡识别
 @img_bp.route('/answer_sheet_identification', methods=['POST'])
 def answer_sheet_identification():
     if request.method == 'POST':
         imp.answer_sheet_identification()
+        return jsonify({'code': 200})
+
+
+# 图像去噪
+@img_bp.route('/image_denoising', methods=['POST'])
+def image_denoising():
+    if request.method == 'POST':
+        h = request.form.get('h')
+        hColor = request.form.get('hColor')
+        templateWindowSize = request.form.get('templateWindowSize')
+        searchWindowSize = request.form.get('searchWindowSize')
+        imp.image_denoising(h=float(h), hColor=float(hColor), templateWindowSize=int(templateWindowSize),
+                            searchWindowSize=int(searchWindowSize))
+        return jsonify({'code': 200})
+
+
+# 图像修复
+@img_bp.route('/image_restoration', methods=['POST'])
+def image_restoration():
+    if request.method == 'POST':
+        template_data = request.files.get('image').read()
+        # 将图片数据转换为OpenCV格式
+        nparr = np.fromstring(template_data, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        imp.image_restoration(img)
         return jsonify({'code': 200})

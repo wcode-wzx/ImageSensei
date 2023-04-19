@@ -392,6 +392,7 @@ class ImageProcessor:
         blank = np.zeros([rows, cols], img1.dtype)
         rst = cv2.addWeighted(img1, c, blank, 1 - c, b)
         return rst
+
     def answer_sheet_identification(self):
         gray = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
         # 高斯滤波
@@ -460,3 +461,18 @@ class ImageProcessor:
                 cv2.circle(paper, (cX, cY), 7, (0, 0, 255), 3)
 
         self.processed_image = paper
+
+    # 图像去噪 h=3:float, hColor=3:float, templateWindowSize=7, searchWindowSize=21 10, 10, 7, 21
+    def image_denoising(self, h: float, hColor: float, templateWindowSize: int, searchWindowSize: int) -> None:
+        self.processed_image = cv2.fastNlMeansDenoisingColored(self.original_image, None, h, hColor, templateWindowSize,
+                                                               searchWindowSize)
+
+    # 图像修复
+    def image_restoration(self, mask):
+        print(self.original_image.shape[0:2])
+        mask = cv2.resize(mask, (self.original_image.shape[1], self.original_image.shape[0]))
+
+        gray = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+        self.processed_image = gray
+        print(gray.shape)
+        self.processed_image = cv2.inpaint(self.original_image, gray, 3, cv2.INPAINT_NS)

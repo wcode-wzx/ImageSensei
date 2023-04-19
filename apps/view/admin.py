@@ -53,3 +53,11 @@ def face_recognition():
 @admin_bp.route('/answer_sheet_identification', methods=['GET','POST'])
 def answer_sheet_identification():
     return render_template("form/answer_sheet_identification.html")
+
+@admin_bp.route('/image_denoising', methods=['GET','POST'])
+def image_denoising():
+    return render_template("form/image_denoising.html")
+
+@admin_bp.route('/image_restoration', methods=['GET','POST'])
+def image_restoration():
+    return render_template("form/image_restoration.html")

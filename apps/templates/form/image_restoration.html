@@ -1,0 +1,37 @@
+{#图像修复#}
+<body>
+<form id="image_restoration">
+    <label for="image">模板图像:</label>
+    <input type="file" name="image" id="image"><br><br>
+    <input type="submit" value="修复">
+</form>
+<script>
+    $(document).ready(function() {
+        $('#image_restoration').submit(function(event) {
+            event.preventDefault();
+            var formData = new FormData($(this)[0]);
+            $.ajax({
+                url: '/img/image_restoration',
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                // 处理成功响应
+                console.log("success")
+                get_html("/admin/show", id = '#content')
+                },
+                error: function (xhr) {
+                    // 处理错误响应
+                    console.log("error")
+                    layer.msg('请先选择图片', {
+                    icon: 2,
+                    time: 2000
+                })//2秒关闭（如果不配置，默认是3秒）
+                }
+            });
+        });
+    });
+</script>
