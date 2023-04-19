@@ -1,8 +1,10 @@
 import json
 
 import cv2
+import math
 import numpy as np
 import base64
+
 
 class ImageProcessor:
     def __init__(self):
@@ -93,7 +95,7 @@ class ImageProcessor:
         gray_image = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
         _, self.processed_image = cv2.threshold(gray_image, threshold, 255, cv2.THRESH_BINARY)
 
-    #-------------------图像几何变换------------------------
+    # -------------------图像几何变换------------------------
     def scale(self, scale_factor):
         """
         缩放图像大小
@@ -191,7 +193,7 @@ class ImageProcessor:
         gray_img = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)  # 将图像转换为灰度
         self.processed_image = gray_img
         return gray_img
-    
+
     # -------------------平滑图像------------------------
     def set_kernel_size(self, kernel_size):
         """设置kernel_size
@@ -216,7 +218,6 @@ class ImageProcessor:
     def bilateral_filter(self):
         """双边滤波"""
         self.processed_image = cv2.bilateralFilter(self.original_image, self.kernel_size, 75, 75)
-
 
     # -------------------形态转换------------------------
     def set_kernel(self, kernel_size: int):
@@ -286,7 +287,7 @@ class ImageProcessor:
 
         # 使用 Canny 算法进行边缘检测
         self.processed_image = cv2.Canny(blurred, minVal, maxVal)
-    
+
     # -------------------模板匹配------------------------
     def template_matching(self, template: np.ndarray, method: str) -> np.ndarray:
         """
@@ -301,10 +302,10 @@ class ImageProcessor:
         """
         original_image = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
         template_image = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
-        
+
         # 获取模板的宽度和高度
         w, h = template_image.shape[::-1]
-        print(w,h)
+        print(w, h)
 
         # 使用模板匹配算法在图像中搜索模板
         res = cv2.matchTemplate(original_image, template_image, eval(method))
@@ -320,6 +321,56 @@ class ImageProcessor:
         # 返回带有所有匹配位置框的图像
         self.processed_image = temp
         return self.processed_image
+
+    # -------------------霍夫变换------------------------
+    def detect_lines(self, rho_res=1, threshold=200):
+        """
+        霍夫线变换
+        :param rho_res:
+        :param threshold:
+        :return:
+        """
+        gray = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
+        edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+        lines = cv2.HoughLines(edges, rho_res, np.pi / 180, threshold)
+        img = self.original_image.copy()
+        for line in lines:
+            rho, theta = line[0]
+            a = np.cos(theta)
+            b = np.sin(theta)
+            x0 = a * rho
+            y0 = b * rho
+            x1 = int(x0 + 1000 * (-b))
+            y1 = int(y0 + 1000 * (a))
+            x2 = int(x0 - 1000 * (-b))
+            y2 = int(y0 - 1000 * (a))
+            cv2.line(img, (x1, y1), (x2, y2), (0, 255, 255), 1)
+        self.processed_image = img
+        return img
+
+    def detect_circles(self, param1=50, param2=30, minRadius=0, maxRadius=0):
+        """
+        霍夫圆变换
+        :param param1:
+        :param param2:
+        :param minRadius:
+        :param maxRadius:
+        :return:
+        """
+        gray = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
+        img = cv2.medianBlur(gray, 5)
+        cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 20,
+                                  param1=param1, param2=param2, minRadius=minRadius, maxRadius=maxRadius)
+        circles = np.uint16(np.around(circles))
+        for i in circles[0, :]:
+            # draw the outer circle
+            cv2.circle(cimg, (i[0], i[1]), i[2], (0, 255, 0), 2)
+            # draw the center of the circle
+            cv2.circle(cimg, (i[0], i[1]), 2, (0, 0, 255), 3)
+        self.processed_image = cimg
+        return cimg
+
 
 
 

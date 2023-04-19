@@ -34,6 +34,10 @@
                 error: function (xhr) {
                     // 处理错误响应
                     console.log("error")
+                    layer.msg('请先选择图片', {
+                    icon: 2,
+                    time: 2000
+                })//2秒关闭（如果不配置，默认是3秒）
                 }
             });
         });

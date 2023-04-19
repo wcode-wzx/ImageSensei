@@ -101,6 +101,7 @@ def index():
             # return f"源点：{src_points}，目标点：{dst_points}"
         return jsonify({'status': 'success'})
 
+
 # 图像阈值
 @img_bp.route('/image_threshold', methods=['GET', 'POST'])
 def image_threshold():
@@ -131,7 +132,8 @@ def image_threshold():
             print('Invalid Function')
 
         return jsonify({'status': 'success Form Processed Successfully'})
-    
+
+
 # 平滑图像
 @img_bp.route('/smooth_image', methods=['GET', 'POST'])
 def smooth_image():
@@ -155,6 +157,7 @@ def smooth_image():
             return jsonify({'status': 'success Form Processed Successfully'})
         else:
             return jsonify({'error': 'Invalid filter type'})
+
 
 # 形态转换
 @img_bp.route('/morphological_transformation', methods=['GET', 'POST'])
@@ -187,9 +190,11 @@ def morphological_transformation():
             imp.blackhat()
             return jsonify({'status': 'success Form Processed Successfully'})
         else:
-            return jsonify({'error': 'Invalid filter type'})    
-        
-# 边缘检测
+            return jsonify({'error': 'Invalid filter type'})
+
+        # 边缘检测
+
+
 @img_bp.route('/edge_detection', methods=['POST'])
 def edge_detection():
     if request.method == 'POST':
@@ -197,6 +202,7 @@ def edge_detection():
         maxVal = int(request.form.get('maxVal'))
         imp.edge_detection(minVal=minVal, maxVal=maxVal)
         return jsonify({'status': 'edge_detection success'})
+
 
 # 模板匹配
 @img_bp.route('/template_matching', methods=['POST'])
@@ -210,6 +216,27 @@ def template_matching():
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         imp.template_matching(img, method)
+        return jsonify({'status': 'template_matching success'})
+
+
+# 霍夫变换
+@img_bp.route('/hough_transform', methods=['POST'])
+def hough_transform():
+    if request.method == 'POST':
+        operation = request.form.get('select')
+        if operation == 'line':
+            rho_res = request.form.get('rho_res')
+            threshold = request.form.get('threshold')
+            imp.detect_lines(rho_res=int(float(rho_res)), threshold=int(float(threshold)))
+        elif operation == 'circles':
+            param1 = request.form.get('param1')
+            param2 = request.form.get('param2')
+            minRadius = request.form.get('minRadius')
+            maxRadius = request.form.get('maxRadius')
+            imp.detect_circles(param1=float(param1), param2=float(param2), minRadius=int(minRadius), maxRadius=int(maxRadius))
+        else:
+            pass
+        print(operation)
         return jsonify({'status': 'template_matching success'})
 
 
@@ -265,5 +292,3 @@ def morphological_transform():
         return jsonify({'status': 'error', 'message': 'Invalid transform type'})
     cv2.imwrite('processed_image.jpg', transformed_image)
     return jsonify({'status': 'success'})
-
-

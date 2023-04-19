@@ -1,1 +1,63 @@
 {#霍夫变换#}
+{#图像阈值#}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Demo</title>
+    <style>#hough_transform {line-height: 2; /* 设置行距为2.5倍 */}</style>
+    <script>
+        function showParams() {
+            var select = document.getElementById("hough_function_select");
+            var selectedValue = select.options[select.selectedIndex].value;
+            var paramsDiv = document.getElementById("hough-div");
+            paramsDiv.innerHTML = "";
+
+            switch (selectedValue) {
+                case "line":
+                    paramsDiv.innerHTML = "<input type='hidden' name='select' value='line'><label for='line-value'>rho_res:</label><input type='number' name='rho_res' id='line-value' value=1><br><label for='line-value1'>threshold:</label><input type='number' name='threshold' id='line-value1' value=200>";
+                    break;
+                case "circles":
+                    paramsDiv.innerHTML = "<input type='hidden' name='select' value='circles'><label for='circles-value'>param1:</label><input type='number' name='param1' id='circles-value' value=50><br><label for='circles-value1'>param2:</label><input type='number' name='param2' id='circles-value1' value=30><label for='circles-value2'>minRadius:</label><input type='number' name='minRadius' id='circles-value2' value=0><br><label for='circles-value3'>maxRadius:</label><input type='number' name='maxRadius' id='circles-value3' value=0>";
+                    break;
+                default:
+                    break;
+            }
+        }
+    </script>
+</head>
+<body>
+<form id="hough_transform">
+    <label for="hough_function_select">霍夫变换:</label>
+    <select id="hough_function_select" onchange="showParams()">
+        <option value="">Select</option>
+        <option value="line">线变换</option>
+        <option value="circles">圆变换</option>
+    </select>
+    <div id="hough-div"></div>
+    <button type="submit">提交</button>
+</form>
+<script>
+    $("#hough_transform").submit(function (event) {
+        event.preventDefault();  // 阻止表单的默认提交行为
+        $.ajax({
+            url: "/img/hough_transform",
+            type: "POST",
+            data: $(this).serialize(),
+            success: function (response) {
+                // 处理成功响应
+                console.log("success")
+                get_html("/admin/show", id = '#content')
+            },
+            error: function (xhr) {
+                // 处理错误响应
+                console.log("error")
+                layer.msg('参数错误', {
+                    icon: 2,
+                    time: 2000
+                })//2秒关闭（如果不配置，默认是3秒）
+            }
+        });
+    });
+</script>
+</body>
+</html>
