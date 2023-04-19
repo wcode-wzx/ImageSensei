@@ -236,59 +236,22 @@ def hough_transform():
             imp.detect_circles(param1=float(param1), param2=float(param2), minRadius=int(minRadius), maxRadius=int(maxRadius))
         else:
             pass
-        print(operation)
         return jsonify({'status': 'template_matching success'})
 
+# 人脸识别
+@img_bp.route('/face_recognition', methods=['POST'])
+def face_recognition():
+    if request.method == 'POST':
+        scaleFactor = request.form.get('scaleFactor')
+        minNeighbors = request.form.get('minNeighbors')
+        if imp.face_recognition(float(scaleFactor), int(minNeighbors)):
+            return jsonify({'code': 200})
+        else:
+            return jsonify({'code': 0})
 
-# 直方图均衡化
-@img_bp.route('/equalize_histogram', methods=['POST'])
-def equalize_histogram():
-    img = cv2.imread('input_image.jpg', cv2.IMREAD_GRAYSCALE)
-    equalized_image = cv2.equalizeHist(img)
-    cv2.imwrite('processed_image.jpg', equalized_image)
-    return jsonify({'status': 'success'})
-
-
-# 图像滤波
-@img_bp.route('/apply_filter', methods=['POST'])
-def apply_filter():
-    filter_type = request.form.get('filter_type')
-    kernel_size = int(request.form.get('kernel_size'))
-    img = cv2.imread('input_image.jpg', cv2.IMREAD_COLOR)
-    if filter_type == 'blur':
-        filtered_image = cv2.blur(img, (kernel_size, kernel_size))
-    elif filter_type == 'gaussian':
-        filtered_image = cv2.GaussianBlur(img, (kernel_size, kernel_size), 0)
-    elif filter_type == 'median':
-        filtered_image = cv2.medianBlur(img, kernel_size)
-    else:
-        return jsonify({'status': 'error', 'message': 'Invalid filter type'})
-    cv2.imwrite('processed_image.jpg', filtered_image)
-    return jsonify({'status': 'success'})
-
-
-# 图像锐化
-@img_bp.route('/sharpen', methods=['POST'])
-def sharpen():
-    img = cv2.imread('input_image.jpg', cv2.IMREAD_UNCHANGED)
-    sharpen_kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
-    sharpened_image = cv2.filter2D(img, -1, sharpen_kernel)
-    cv2.imwrite('processed_image.jpg', sharpened_image)
-    return jsonify({'status': 'success'})
-
-
-# 形态学处理
-@img_bp.route('/morphological_transform', methods=['POST'])
-def morphological_transform():
-    transform_type = request.form.get('transform_type')
-    kernel_size = int(request.form.get('kernel_size'))
-    img = cv2.imread('input_image.jpg', cv2.IMREAD_GRAYSCALE)
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
-    if transform_type == 'erosion':
-        transformed_image = cv2.erode(img, kernel, iterations=1)
-    elif transform_type == 'dilation':
-        transformed_image = cv2.dilate(img, kernel, iterations=1)
-    else:
-        return jsonify({'status': 'error', 'message': 'Invalid transform type'})
-    cv2.imwrite('processed_image.jpg', transformed_image)
-    return jsonify({'status': 'success'})
+# answer_sheet_identification 答题卡识别
+@img_bp.route('/answer_sheet_identification', methods=['POST'])
+def answer_sheet_identification():
+    if request.method == 'POST':
+        imp.answer_sheet_identification()
+        return jsonify({'code': 200})

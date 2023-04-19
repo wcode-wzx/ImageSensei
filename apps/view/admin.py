@@ -45,3 +45,11 @@ def template_matching():
 @admin_bp.route('/hough_transform', methods=['GET','POST'])
 def hough_transform():
     return render_template("form/hough_transform.html")
+
+@admin_bp.route('/face_recognition', methods=['GET','POST'])
+def face_recognition():
+    return render_template("form/face_recognition.html")
+
+@admin_bp.route('/answer_sheet_identification', methods=['GET','POST'])
+def answer_sheet_identification():
+    return render_template("form/answer_sheet_identification.html")

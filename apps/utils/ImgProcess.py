@@ -1,9 +1,9 @@
 import json
 
 import cv2
-import math
 import numpy as np
 import base64
+from imutils.perspective import four_point_transform
 
 
 class ImageProcessor:
@@ -361,7 +361,7 @@ class ImageProcessor:
         img = cv2.medianBlur(gray, 5)
         cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
         circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 20,
-                                  param1=param1, param2=param2, minRadius=minRadius, maxRadius=maxRadius)
+                                   param1=param1, param2=param2, minRadius=minRadius, maxRadius=maxRadius)
         circles = np.uint16(np.around(circles))
         for i in circles[0, :]:
             # draw the outer circle
@@ -371,30 +371,92 @@ class ImageProcessor:
         self.processed_image = cimg
         return cimg
 
+    # 人脸识别
+    def face_recognition(self, scaleFactor=1.1, minNeighbors=3):
+        face_cascade = cv2.CascadeClassifier('data/haarcascade_frontalface_default.xml')
+        gray = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
+        img = self.original_image.copy()
 
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=scaleFactor, minNeighbors=minNeighbors)
+        for (x, y, w, h) in faces:
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        self.processed_image = img
+        if len(faces) == 0:
+            return False
+        else:
+            return True
 
+    # 答题卡识别
+    def imgBrightness(self, img1, c, b):
+        rows, cols = img1.shape
+        blank = np.zeros([rows, cols], img1.dtype)
+        rst = cv2.addWeighted(img1, c, blank, 1 - c, b)
+        return rst
+    def answer_sheet_identification(self):
+        gray = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)
+        # 高斯滤波
+        blurred = cv2.GaussianBlur(gray, (3, 3), 0)
+        # 增强亮度
+        blurred = self.imgBrightness(blurred, 1.5, 4)
 
-def img_to_base64(img_array):
-    """
-    传入图片为RGB格式numpy矩阵，传出的base64也是通过RGB的编码
-    :param img_array:
-    :return:
-    """
-    img_array = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)  # RGB2BGR，用于cv2编码
-    encode_image = cv2.imencode(".jpg", img_array)[1]  # 用cv2压缩/编码，转为一维数组
-    byte_data = encode_image.tobytes()  # 转换为二进制
-    base64_str = base64.b64encode(byte_data).decode("ascii")  # 转换为base64
-    return base64_str
+        # 自适应二值化
+        blurred = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 51, 2)
+        '''
+        adaptiveThreshold函数：第一个参数src指原图像，原图像应该是灰度图。
+            第二个参数x指当像素值高于（有时是小于）阈值时应该被赋予的新的像素值
+            第三个参数adaptive_method 指： CV_ADAPTIVE_THRESH_MEAN_C 或 CV_ADAPTIVE_THRESH_GAUSSIAN_C
+            第四个参数threshold_type  指取阈值类型：必须是下者之一  
+                                • CV_THRESH_BINARY,
+                                • CV_THRESH_BINARY_INV
+            第五个参数 block_size 指用来计算阈值的象素邻域大小: 3, 5, 7, ...
+            第六个参数param1    指与方法有关的参数。对方法CV_ADAPTIVE_THRESH_MEAN_C 和 CV_ADAPTIVE_THRESH_GAUSSIAN_C， 它是一个从均值或加权均值提取的常数, 尽管它可以是负数。
+        '''
+        blurred = cv2.copyMakeBorder(blurred, 5, 5, 5, 5, cv2.BORDER_CONSTANT, value=(255, 255, 255))
 
+        # canny边缘检测
+        edged = cv2.Canny(blurred, 0, 255)
+        cnts, hierarchy = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        docCnt = []
+        count = 0
+        # 确保至少有一个轮廓被找到
+        if len(cnts) > 0:
+            # 将轮廓按照大小排序
+            cnts = sorted(cnts, key=cv2.contourArea, reverse=True)
+        # 对排序后的轮廓进行循环处理
+        for c in cnts:
+            # 获取近似的轮廓
+            peri = cv2.arcLength(c, True)
+            approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+            # 如果近似轮廓有四个顶点，那么就认为找到了答题卡
+            if len(approx) == 4:
+                docCnt.append(approx)
+                count += 1
+                if count == 3:
+                    break
 
-def base64_to_img(base64_str):
-    """
-    传入为RGB格式下的base64，传出为RGB格式的numpy矩阵
-    :param base64_str:
-    :return:
-    """
-    byte_data = base64.b64decode(base64_str)  # 将base64转换为二进制
-    encode_image = np.asarray(bytearray(byte_data), dtype="uint8")  # 二进制转换为一维数组
-    img_array = cv2.imdecode(encode_image, cv2.IMREAD_COLOR)  # 用cv2解码为三通道矩阵
-    img_array = cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB)  # BGR2RGB
-    return img_array
+        # 四点变换，划出选择题区域
+        paper = four_point_transform(self.original_image, np.array(docCnt[0]).reshape(4, 2))
+        warped = four_point_transform(gray, np.array(docCnt[0]).reshape(4, 2))
+
+        thresh = cv2.threshold(warped, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+        thresh = cv2.resize(thresh, (2400, 2800), cv2.INTER_LANCZOS4)
+        paper = cv2.resize(paper, (2400, 2800), cv2.INTER_LANCZOS4)
+        warped = cv2.resize(warped, (2400, 2800), cv2.INTER_LANCZOS4)
+        cnts, hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        questionCnts = []
+        answers = []
+        # 对每一个轮廓进行循环处理
+        for c in cnts:
+            # 计算轮廓的边界框，然后利用边界框数据计算宽高比
+            (x, y, w, h) = cv2.boundingRect(c)
+            ar = w / float(h)
+            # 判断轮廓是否是答题框
+            if w >= 40 and h >= 15 and ar >= 1 and ar <= 1.8:
+                M = cv2.moments(c)
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+                questionCnts.append(c)
+                answers.append((cX, cY))
+                cv2.circle(paper, (cX, cY), 7, (0, 0, 255), 3)
+
+        self.processed_image = paper

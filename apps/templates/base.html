@@ -35,18 +35,6 @@
                 <i class="layui-icon layui-icon-spread-left"></i>
             </li>
 
-            <li class="layui-nav-item layui-hide-xs"><a href="">nav 1</a></li>
-            <li class="layui-nav-item layui-hide-xs"><a href="">nav 2</a></li>
-            <li class="layui-nav-item layui-hide-xs"><a href="">nav 3</a></li>
-            <li class="layui-nav-item">
-                <a href="javascript:;">nav groups<i class="layui-icon layui-icon-down layui-nav-more"></i></a>
-                <dl class="layui-nav-child">
-                    <dd><a href="">menu 11</a></dd>
-                    <dd><a href="">menu 22</a></dd>
-                    <dd><a href="">menu 33</a></dd>
-                </dl>
-            </li>
-
 
             <span class="layui-nav-bar"></span></ul>
         <ul class="layui-nav layui-layout-right">
@@ -79,13 +67,13 @@
                         <dd><a onclick="chages('/admin/show', '/admin/hough_transform')">霍夫变换</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item">
-                    <a href="javascript:;">特征检测<i class="layui-icon layui-icon-down layui-nav-more"></i></a>
-                    <dl class="layui-nav-child">
-                        <dd><a onclick="chages('/admin/show', '/admin/template_matching')">角点检测</a></dd>
-                        <dd><a onclick="chages('/admin/show', '/admin/hough_transform')">特征匹配</a></dd>
-                    </dl>
-                </li>
+{#                <li class="layui-nav-item">#}
+{#                    <a href="javascript:;">特征检测<i class="layui-icon layui-icon-down layui-nav-more"></i></a>#}
+{#                    <dl class="layui-nav-child">#}
+{#                        <dd><a onclick="chages('/admin/show', '/admin/template_matching')">角点检测</a></dd>#}
+{#                        <dd><a onclick="chages('/admin/show', '/admin/hough_transform')">特征匹配</a></dd>#}
+{#                    </dl>#}
+{#                </li>#}
                 <li class="layui-nav-item">
                     <a href="javascript:;">计算摄影<i class="layui-icon layui-icon-down layui-nav-more"></i></a>
                     <dl class="layui-nav-child">
@@ -93,8 +81,8 @@
                         <dd><a onclick="chages('/admin/show', '/admin/hough_transform')">图像修复</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item"><a onclick="chages('/admin/show', '/admin/template_matching')">人脸检测 demo</a></li>
-                <li class="layui-nav-item"><a onclick="chages('/admin/show', '/admin/template_matching')">答题卡识别 demo</a></li>
+                <li class="layui-nav-item"><a onclick="chages('/admin/show', '/admin/face_recognition')">人脸检测 demo</a></li>
+                <li class="layui-nav-item"><a onclick="chages('/admin/show', '/admin/answer_sheet_identification')">答题卡识别 demo</a></li>
                 <span class="layui-nav-bar" style="top: 55px; height: 0px; opacity: 0;"></span></ul>
         </div>
     </div>

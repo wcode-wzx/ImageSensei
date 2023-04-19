@@ -1,7 +1,8 @@
 opencv-python
 Flask
 python-dotenv
-
+imutils
+scipy
 tqdm==4.65.0
 pandas==1.4.4
 PyMySQL==1.0.2
