@@ -2,7 +2,11 @@ class Explanation:
 
     # 答题卡识别
     def answer_sheet_identification(self):
-        return """hshshh"""
+        return """先灰度化再二值化。<br>
+        边缘检测划出选择题区域，如果直接进行边缘检测的话，干扰特别多，所以这个时候需要采取腐蚀膨胀等一系列处理。<br>
+        使用cv2.findContours()函数来查找涂黑区域的轮廓。<br>
+        最后定位做标记。
+        """
 
     # 边缘检测
     def edge_detection(self):
@@ -16,7 +20,10 @@ class Explanation:
     def face_recognition(self):
         return """
         OpenCV 已经包含许多面部，眼睛，微笑等预先训练的分类器。这些 XML 文件存储在 opencv/data/haarcascades/文件夹 中。<br>
-        我们在图像中找到面孔。如果找到了面，它会将检测到的面的位置返回为 Rect（x，y，w，h）。一旦我们获得这些位置，我们就可以为脸部创建感兴趣区域。
+        我们在图像中找到面孔。如果找到了面，它会将检测到的面的位置返回为 Rect（x，y，w，h）。一旦我们获得这些位置，我们就可以为脸部创建感兴趣区域。<br>
+        包含两个参数：<br>
+        scaleFactor “指定每次图像缩小的比例” <br>
+        minNeighbors 指定每个候选矩形有多少个“邻居”
         """
 
     # 图像几何变换
