@@ -1,36 +1,46 @@
 {#人脸识别#}
-<body>
-<form id="face_recognition">
-    <label for="scaleFactor">scaleFactor:</label>
-    <input type="number" id="scaleFactor" name="scaleFactor" value="1.1" step="0.1"><br><br>
-    <label for="minNeighbors">minNeighbors:</label>
-    <input type="number" id="minNeighbors" name="minNeighbors" value="5" step="1"><br><br>
-    <input type="submit" value="人脸检测">
-</form>
-<script>
-    $("#face_recognition").submit(function (event) {
-        event.preventDefault();  // 阻止表单的默认提交行为
-        $.ajax({
-            url: "/img/face_recognition",
-            type: "POST",
-            data: $(this).serialize(),
-            success: function (response) {
-                // 处理成功响应
-                console.log("success")
-                get_html("/admin/show", id = '#content')
-                if (response["code"] == 0){
-                    layer.msg('未识别到人脸', {
-                    icon: 2,
-                    time: 2000
-                })//2秒关闭（如果不配置，默认是3秒）
-                }
+{% extends 'extend.html' %}
 
-            },
-            error: function (xhr) {
-                // 处理错误响应
-                console.log("error")
-            }
+{% block from_content %}
+    <form id="face_recognition">
+        <label for="scaleFactor">scaleFactor:</label>
+        <input type="number" id="scaleFactor" name="scaleFactor" value="1.1" step="0.1"><br><br>
+        <label for="minNeighbors">minNeighbors:</label>
+        <input type="number" id="minNeighbors" name="minNeighbors" value="5" step="1"><br><br>
+        <input type="submit" value="人脸检测">
+    </form>
+{% endblock %}
+
+{% block content %}
+{{ explanation }}
+{% endblock %}
+
+{% block script_content %}
+
+    <script>
+        $("#face_recognition").submit(function (event) {
+            event.preventDefault();  // 阻止表单的默认提交行为
+            $.ajax({
+                url: "/img/face_recognition",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (response) {
+                    // 处理成功响应
+                    console.log("success")
+                    get_html("/admin/show", id = '#content')
+                    if (response["code"] == 0) {
+                        layer.msg('未识别到人脸', {
+                            icon: 2,
+                            time: 2000
+                        })//2秒关闭（如果不配置，默认是3秒）
+                    }
+
+                },
+                error: function (xhr) {
+                    // 处理错误响应
+                    console.log("error")
+                }
+            });
         });
-    });
-</script>
-</body>
+    </script>
+{% endblock %}

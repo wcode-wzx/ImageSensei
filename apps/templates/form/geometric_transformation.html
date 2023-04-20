@@ -1,122 +1,133 @@
 {#图像几何变换#}
-<style>#geometric_transformation{line-height: 2.5; /* 设置行距为2.5倍 */}</style>
-<body>
-<form id="geometric_transformation">
-    <label for="operation">选择操作:</label>
-    <select id="operation" name="operation">
-        <option value="scale">缩放</option>
-        <option value="translate">平移</option>
-        <option value="rotate">旋转</option>
-        <option value="affine">仿射</option>
-    </select>
-    <br>
-    <div id="scale_factor_div" style="display:none;">
-        <label for="scale_factor">缩放因子:</label>
-        <input type="number" id="scale_factor" name="scale_factor" min="0" step="0.1" required>
-        <br>
-    </div>
-    <div id="xy_div" style="display:none;">
-        <label for="x">X:</label>
-        <input type="number" id="x" name="x" required>
-        <br>
-        <label for="y">Y:</label>
-        <input type="number" id="y" name="y" required>
-        <br>
-    </div>
-    <div id="angle_div" style="display:none;">
-        <label for="angle">角度:</label>
-        <input type="number" id="angle" name="angle" required>
-        <br>
-    </div>
-    <div id="points_div" style="display:none;">
-        <label for="src_points">源点:</label>
-        <input type="text" id="src_points" name="src_points" value="[[50,50],[200,50],[50,200]]" required>
-        <br>
-        <label for="dst_points">目标点:</label>
-        <input type="text" id="dst_points" name="dst_points" value="[[20,50],[200,40],[40,200]]" required>
-        <br>
-    </div>
-    <button type="submit">提交</button>
-</form>
+{% extends 'extend.html' %}
+<style>#geometric_transformation {
+    line-height: 2.5; /* 设置行距为2.5倍 */
+}</style>
 
-<script>
-    const operationSelect = document.getElementById("operation");
-    const scaleFactorDiv = document.getElementById("scale_factor_div");
-    const xyDiv = document.getElementById("xy_div");
-    const angleDiv = document.getElementById("angle_div");
-    const pointsDiv = document.getElementById("points_div");
-    const scaleFactorInput = document.getElementById("scale_factor");
-    const xInput = document.getElementById("x");
-    const yInput = document.getElementById("y");
-    const angleInput = document.getElementById("angle");
-    const srcPointsInput = document.getElementById("src_points");
-    const dstPointsInput = document.getElementById("dst_points");
+{% block from_content %}
+    <form id="geometric_transformation">
+        <label for="operation">选择操作:</label>
+        <select id="operation" name="operation">
+            <option value="scale">缩放</option>
+            <option value="translate">平移</option>
+            <option value="rotate">旋转</option>
+            <option value="affine">仿射</option>
+        </select>
+        <br>
+        <div id="scale_factor_div" style="display:none;">
+            <label for="scale_factor">缩放因子:</label>
+            <input type="number" id="scale_factor" name="scale_factor" min="0" step="0.1" required>
+            <br>
+        </div>
+        <div id="xy_div" style="display:none;">
+            <label for="x">X:</label>
+            <input type="number" id="x" name="x" required>
+            <br>
+            <label for="y">Y:</label>
+            <input type="number" id="y" name="y" required>
+            <br>
+        </div>
+        <div id="angle_div" style="display:none;">
+            <label for="angle">角度:</label>
+            <input type="number" id="angle" name="angle" required>
+            <br>
+        </div>
+        <div id="points_div" style="display:none;">
+            <label for="src_points">源点:</label>
+            <input type="text" id="src_points" name="src_points" value="[[50,50],[200,50],[50,200]]" required>
+            <br>
+            <label for="dst_points">目标点:</label>
+            <input type="text" id="dst_points" name="dst_points" value="[[20,50],[200,40],[40,200]]" required>
+            <br>
+        </div>
+        <button type="submit">提交</button>
+    </form>
+{% endblock %}
 
-    operationSelect.addEventListener("change", function () {
-        if (operationSelect.value === "scale") {
-            scaleFactorDiv.style.display = "block";
-            xyDiv.style.display = "none";
-            angleDiv.style.display = "none";
-            pointsDiv.style.display = "none";
-            scaleFactorInput.required = true;
-            xInput.required = false;
-            yInput.required = false;
-            angleInput.required = false;
-            srcPointsInput.required = false;
-            dstPointsInput.required = false;
-        } else if (operationSelect.value === "translate") {
-            scaleFactorDiv.style.display = "none";
-            xyDiv.style.display = "block";
-            angleDiv.style.display = "none";
-            pointsDiv.style.display = "none";
-            scaleFactorInput.required = false;
-            xInput.required = true;
-            yInput.required = true;
-            angleInput.required = false;
-            srcPointsInput.required = false;
-            dstPointsInput.required = false;
-        } else if (operationSelect.value === "rotate") {
-            scaleFactorDiv.style.display = "none";
-            xyDiv.style.display = "none";
-            angleDiv.style.display = "block";
-            pointsDiv.style.display = "none";
-            scaleFactorInput.required = false;
-            xInput.required = false;
-            yInput.required = false;
-            angleInput.required = true;
-            srcPointsInput.required = false;
-            dstPointsInput.required = false;
-        } else if (operationSelect.value === "affine") {
-            scaleFactorDiv.style.display = "none";
-            xyDiv.style.display = "none";
-            angleDiv.style.display = "none";
-            pointsDiv.style.display = "block";
-            scaleFactorInput.required = false;
-            xInput.required = false;
-            yInput.required = false;
-            angleInput.required = false;
-            srcPointsInput.required = true;
-            dstPointsInput.required = true;
-        }
-    });
-</script>
-<script>
-    $("#geometric_transformation").submit(function (event) {
-        event.preventDefault();  // 阻止表单的默认提交行为
-        $.ajax({
-            url: "/img/geometric_transformation",
-            type: "POST",
-            data: $(this).serialize(),
-            success: function (response) {
-                // 处理成功响应
-                console.log("success")
-                get_html("/admin/show", id = '#content')
-            },
-            error: function (xhr) {
-                // 处理错误响应
-                console.log("error")
+{% block content %}
+{{ explanation|safe }}
+{% endblock %}
+
+
+{% block script_content %}
+    <script>
+        const operationSelect = document.getElementById("operation");
+        const scaleFactorDiv = document.getElementById("scale_factor_div");
+        const xyDiv = document.getElementById("xy_div");
+        const angleDiv = document.getElementById("angle_div");
+        const pointsDiv = document.getElementById("points_div");
+        const scaleFactorInput = document.getElementById("scale_factor");
+        const xInput = document.getElementById("x");
+        const yInput = document.getElementById("y");
+        const angleInput = document.getElementById("angle");
+        const srcPointsInput = document.getElementById("src_points");
+        const dstPointsInput = document.getElementById("dst_points");
+
+        operationSelect.addEventListener("change", function () {
+            if (operationSelect.value === "scale") {
+                scaleFactorDiv.style.display = "block";
+                xyDiv.style.display = "none";
+                angleDiv.style.display = "none";
+                pointsDiv.style.display = "none";
+                scaleFactorInput.required = true;
+                xInput.required = false;
+                yInput.required = false;
+                angleInput.required = false;
+                srcPointsInput.required = false;
+                dstPointsInput.required = false;
+            } else if (operationSelect.value === "translate") {
+                scaleFactorDiv.style.display = "none";
+                xyDiv.style.display = "block";
+                angleDiv.style.display = "none";
+                pointsDiv.style.display = "none";
+                scaleFactorInput.required = false;
+                xInput.required = true;
+                yInput.required = true;
+                angleInput.required = false;
+                srcPointsInput.required = false;
+                dstPointsInput.required = false;
+            } else if (operationSelect.value === "rotate") {
+                scaleFactorDiv.style.display = "none";
+                xyDiv.style.display = "none";
+                angleDiv.style.display = "block";
+                pointsDiv.style.display = "none";
+                scaleFactorInput.required = false;
+                xInput.required = false;
+                yInput.required = false;
+                angleInput.required = true;
+                srcPointsInput.required = false;
+                dstPointsInput.required = false;
+            } else if (operationSelect.value === "affine") {
+                scaleFactorDiv.style.display = "none";
+                xyDiv.style.display = "none";
+                angleDiv.style.display = "none";
+                pointsDiv.style.display = "block";
+                scaleFactorInput.required = false;
+                xInput.required = false;
+                yInput.required = false;
+                angleInput.required = false;
+                srcPointsInput.required = true;
+                dstPointsInput.required = true;
             }
         });
-    });
-</script>
-</body>
+    </script>
+    <script>
+        $("#geometric_transformation").submit(function (event) {
+            event.preventDefault();  // 阻止表单的默认提交行为
+            $.ajax({
+                url: "/img/geometric_transformation",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (response) {
+                    // 处理成功响应
+                    console.log("success")
+                    get_html("/admin/show", id = '#content')
+                },
+                error: function (xhr) {
+                    // 处理错误响应
+                    console.log("error")
+                }
+            });
+        });
+    </script>
+{% endblock %}

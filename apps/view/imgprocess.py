@@ -24,7 +24,7 @@ def set_image():
 
         imp.set_original_image(img)
         imp.set_processed_image()
-        return render_template('base.html')
+        return render_template('extend.html')
 
 
 @img_bp.route('/get_hwc', methods=['GET', 'POST'])

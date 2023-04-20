@@ -475,4 +475,4 @@ class ImageProcessor:
         gray = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
         self.processed_image = gray
         print(gray.shape)
-        self.processed_image = cv2.inpaint(self.original_image, gray, 3, cv2.INPAINT_NS)
+        self.processed_image = cv2.inpaint(self.original_image, gray, 5, cv2.INPAINT_TELEA)

@@ -1,35 +1,44 @@
 {#平滑图像#}
-<body>
-<form id="smooth_image">
-    <label for="filter_type">选择滤波器类型</label><br>
-    <select id="filter_type" name="filter_type">
-        <option value="mean">均值模糊</option>
-        <option value="gaussian">高斯模糊</option>
-        <option value="median">中值滤波</option>
-        <option value="bilateral">双边滤波</option>
-    </select><br>
-    <label for="kernel_size">输入核大小</label><br>
-    <input type="number" id="kernel_size" name="kernel_size" value="5"><br>
-    <br>
-    <input type="submit" value="提交">
-</form>
-<script>
-    $("#smooth_image").submit(function (event) {
-        event.preventDefault();  // 阻止表单的默认提交行为
-        $.ajax({
-            url: "/img/smooth_image",
-            type: "POST",
-            data: $(this).serialize(),
-            success: function (response) {
-                // 处理成功响应
-                console.log("success")
-                get_html("/admin/show", id = '#content')
-            },
-            error: function (xhr) {
-                // 处理错误响应
-                console.log("error")
-            }
+{% extends 'extend.html' %}
+
+{% block from_content %}
+    <form id="smooth_image">
+        <label for="filter_type">选择滤波器类型</label><br>
+        <select id="filter_type" name="filter_type">
+            <option value="mean">均值模糊</option>
+            <option value="gaussian">高斯模糊</option>
+            <option value="median">中值滤波</option>
+            <option value="bilateral">双边滤波</option>
+        </select><br>
+        <label for="kernel_size">输入核大小</label><br>
+        <input type="number" id="kernel_size" name="kernel_size" value="5"><br>
+        <br>
+        <input type="submit" value="提交">
+    </form>
+{% endblock %}
+
+{% block content %}
+{{ explanation }}
+{% endblock %}
+
+{% block script_content %}
+    <script>
+        $("#smooth_image").submit(function (event) {
+            event.preventDefault();  // 阻止表单的默认提交行为
+            $.ajax({
+                url: "/img/smooth_image",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (response) {
+                    // 处理成功响应
+                    console.log("success")
+                    get_html("/admin/show", id = '#content')
+                },
+                error: function (xhr) {
+                    // 处理错误响应
+                    console.log("error")
+                }
+            });
         });
-    });
-</script>
-</body>
+    </script>
+{% endblock %}

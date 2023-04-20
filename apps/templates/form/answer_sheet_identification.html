@@ -1,8 +1,16 @@
 {#答题卡识别#}
-<body>
-<form id="answer_sheet_identification">
+{% extends 'extend.html' %}
+{% block from_content %}
+    <form id="answer_sheet_identification">
     <input type="submit" value="答题卡识别">
 </form>
+{% endblock %}
+
+{% block content %}
+    {{ explanation }}
+{% endblock %}
+
+{% block script_content %}
 <script>
     $("#answer_sheet_identification").submit(function (event) {
         event.preventDefault();  // 阻止表单的默认提交行为
@@ -22,4 +30,4 @@
         });
     });
 </script>
-</body>
+{% endblock %}

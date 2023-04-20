@@ -1,29 +1,38 @@
 {#图像对比度增强#}
-<body>
-<form id="enhance_contrast">
-    <label for="alpha">Alpha:</label>
-    <input type="number" id="alpha" name="alpha" value="1" step="0.1"><br><br>
-    <label for="beta">Beta:</label>
-    <input type="number" id="beta" name="beta" value="0" step="1"><br><br>
-    <input type="submit" value="Enhance Contrast" onclick="enhance_contrast()">
-</form>
-<script>
-    $("#enhance_contrast").submit(function (event) {
-        event.preventDefault();  // 阻止表单的默认提交行为
-        $.ajax({
-            url: "/img/enhance_contrast",
-            type: "POST",
-            data: $(this).serialize(),
-            success: function (response) {
-                // 处理成功响应
-                console.log("success")
-                get_html("/admin/show", id = '#content')
-            },
-            error: function (xhr) {
-                // 处理错误响应
-                console.log("error")
-            }
+{% extends 'extend.html' %}
+
+{% block from_content %}
+    <form id="enhance_contrast">
+        <label for="alpha">Alpha:</label>
+        <input type="number" id="alpha" name="alpha" value="1" step="0.1"><br><br>
+        <label for="beta">Beta:</label>
+        <input type="number" id="beta" name="beta" value="0" step="1"><br><br>
+        <input type="submit" value="提交" onclick="enhance_contrast()">
+    </form>
+{% endblock %}
+
+{% block content %}
+{{ explanation }}
+{% endblock %}
+
+{% block script_content %}
+    <script>
+        $("#enhance_contrast").submit(function (event) {
+            event.preventDefault();  // 阻止表单的默认提交行为
+            $.ajax({
+                url: "/img/enhance_contrast",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function (response) {
+                    // 处理成功响应
+                    console.log("success")
+                    get_html("/admin/show", id = '#content')
+                },
+                error: function (xhr) {
+                    // 处理错误响应
+                    console.log("error")
+                }
+            });
         });
-    });
-</script>
-</body>
+    </script>
+{% endblock %}

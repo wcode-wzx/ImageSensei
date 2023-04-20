@@ -1,0 +1,19 @@
+<body>
+<div class="layui-container">
+    <div class="layui-row" style="position: relative; top: -30px; line-height:2">
+        <div class="layui-col-md4">
+            {% block from_content %}
+            {% endblock %}
+        </div>
+        <div class="layui-col-md8">
+            <h><b>用法说明</b></h>
+            <div style="height: 120px; overflow: auto; line-height:1.5">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+{% block script_content %}{% endblock %}
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</body>
