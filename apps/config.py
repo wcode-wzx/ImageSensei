@@ -14,7 +14,10 @@ class Explanation:
 
     # 人脸识别
     def face_recognition(self):
-        pass
+        return """
+        OpenCV 已经包含许多面部，眼睛，微笑等预先训练的分类器。这些 XML 文件存储在 opencv/data/haarcascades/文件夹 中。<br>
+        我们在图像中找到面孔。如果找到了面，它会将检测到的面的位置返回为 Rect（x，y，w，h）。一旦我们获得这些位置，我们就可以为脸部创建感兴趣区域。
+        """
 
     # 图像几何变换
     def geometric_transformation(self):
