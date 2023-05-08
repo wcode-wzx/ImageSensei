@@ -171,7 +171,7 @@ class ImageProcessor:
         :return:
         """
         gray_img = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2GRAY)  # 将图像转换为灰度
-        thresh_img = cv2.adaptiveThreshold(gray_img, 255, threshold_type, cv2.THRESH_BINARY, block_size, c)  # 应用自适应阈值
+        thresh_img = cv2.adaptiveThreshold(gray_img, 255, eval(threshold_type), cv2.THRESH_BINARY, int(block_size), int(c))  # 应用自适应阈值
         self.processed_image = thresh_img
         return thresh_img
 
